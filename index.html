@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>15 años Sahily</title>
+    <link rel="stylesheet" href="style.css">
+
+</head>
+
+<body>
+
+    <header class="hero">
+
+        <div class="hero-contenido">
+            <p class="bienvenida">BIENVENIDOS A</p>
+            <h1>Mis 15 años</h1>
+            <p class="mensaje">Gracias por acompañarme en este día tan especial</p>
+
+            <div class="fecha">
+                <span>14</span>
+                <p>de noviembre de 2026</p>
+            </div>
+
+        </div>
+    </header>
+
+    <main>
+
+        <section class="recuerdos">
+            <h2>📸Comparte tus recuerdos</h2>
+            <p>Ayudame a guardar los mejores momentos de esta celebración. 
+                Puedes subir aquí tus fotos y vídeos desde tu celular
+            </p>
+
+            <div class="subida">
+                <label for="archivos" class="boton-subir">Seleccionar fotos y vídeos</label>
+                <input type="file" id="archivos" accept="image/*,video/*" multiple>
+                <p id="nombre-archivos">No has seleccionado ningún archivo</p>
+                <button id="btn-subir">💕 Compartir recuerdos</button>
+            </div>
+
+        </section>
+
+        <section class="galeria">
+            <h2>✨Recuerdos de la celebración</h2>
+
+            <div id="contenedor-galeria">
+                <p class="sin-fotos">
+                    Aquí aparecerán las fotos y vídeos compartidos</p>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <p>💕Gracias por ser parte de este momento tan especial💕</p>
+    </footer>
+
+    <script src="script.js"></script>
+    
+</body>
+</html>

@@ -1,0 +1,236 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body{
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #fff8fc;
+    color: #4a3b45;
+    line-height: 1.6;
+}
+
+/* ENCABEZADO */
+
+.hero {
+    min-height: 70vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 40px 20px;
+    background: linear-gradient(rgba(255, 214, 232, 0.82), rgba(255, 241, 247, 0.92));
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before{
+    content: "✦";
+    position: absolute;
+    top: 50px;
+    left: 12%;
+    font-size: 45px;
+    opacity: 0.35;
+}
+
+.hero::after{
+    content: "✧";
+    position: absolute;
+    bottom: 50px;
+    right: 12%;
+    font-size: 60px;
+    opacity: 0.35;
+}
+
+.hero-contenido{
+    max-width: 700px;
+}
+
+.bienvenida{
+    font-size: 15px;
+    letter-spacing: 5px;
+    margin-bottom: 15px;
+}
+
+.hero h1{
+    font-family: Georgia, serif;
+    font-size: clamp(55px, 10vw, 100px);
+    font-weight: normal;
+    color: #b75d87;
+    margin-bottom: 20px;
+}
+
+.mensaje{
+    font-size: 19px;
+    max-width: 550px;
+    margin: auto;
+}
+
+.fecha{
+    margin-top: 35px;
+}
+
+.fecha span{
+    font-family: Georgia, serif;
+    font-size: 55px;
+    color: #b75d87;
+}
+
+.fecha p{
+    font-size: 18px;
+}
+
+/* SECCIONES */
+
+main {
+    width: 100%;
+}
+
+section {
+    padding: 70px 20px;
+}
+
+.recuerdos {
+    max-width: 900px;
+    margin: auto;
+    text-align: center;
+}
+
+.recuerdos h2,
+.galeria h2 {
+    font-family: Georgia, serif;
+    font-size: 34px;
+    color: #a94f7b;
+    margin-bottom: 15px;
+}
+
+.recuerdos > p {
+    max-width: 650px;
+    margin: 0 auto 35px;
+}
+
+/* ZONA DE SUBIDA */
+
+.subida {
+    max-width: 600px;
+    margin: auto;
+    padding: 35px 25px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 8px 25px rgba(120, 70, 95, 0.12);
+}
+
+#archivos {
+    display: none;
+}
+
+.boton-subir {
+    display: inline-block;
+    padding: 14px 25px;
+    background: #c96d99;
+    color: white;
+    border-radius: 30px;
+    cursor: pointer;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.boton-subir:hover {
+    background: #ad527f;
+    transform: translateY(-2px);
+}
+
+#nombre-archivos {
+    margin: 20px 0;
+    font-size: 14px;
+    color: #777;
+}
+
+#btn-subir {
+    border: none;
+    padding: 13px 25px;
+    background: #f0b3cc;
+    color: #5c3147;
+    border-radius: 30px;
+    font-size: 15px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#btn-subir:hover {
+    background: #e69abb;
+    transform: translateY(-2px);
+}
+
+/* GALERÍA */
+
+.galeria {
+    background: #fff0f6;
+    text-align: center;
+}
+
+.galeria h2 {
+    margin-bottom: 35px;
+}
+
+#contenedor-galeria {
+    max-width: 1100px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+.sin-fotos {
+    grid-column: 1 / -1;
+    color: #8a7180;
+}
+
+/* PIE DE PAGINA */
+
+footer {
+    text-align: center;
+    padding: 30px 20px;
+    background: #b75d87;
+    color: white;
+    font-size: 14px;
+}
+
+/* MEDIA */
+
+@media (max-width: 600px) {
+
+    .hero {
+        min-height: 65vh;
+    }
+
+    .bienvenida {
+        font-size: 12px;
+        letter-spacing: 3px;
+    }
+
+    .mensaje {
+        font-size: 16px;
+    }
+
+    section {
+        padding: 50px 15px;
+    }
+
+    .recuerdos h2,
+    .galeria h2 {
+        font-size: 28px;
+    }
+
+    .subida {
+        padding: 30px 18px;
+    }
+
+    .boton-subir,
+    #btn-subir {
+        width: 100%;
+    }
+
+}
