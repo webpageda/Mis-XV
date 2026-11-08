@@ -1,6 +1,7 @@
 const archivosInput = document.getElementById("archivos");
 const nombreArchivos = document.getElementById("nombre-archivos");
 const btnSubir = document.getElementById("btn-subir");
+const contenedorGaleria = document.getElementById("contenedor-galeria");
 
 // URL DE GOOGLE APPS SCRIPT
 
@@ -17,10 +18,8 @@ archivosInput.addEventListener("change", function () {
     const archivos = Array.from(archivosInput.files);
 
     if (archivos.length === 0) {
-
         nombreArchivos.textContent =
             "No has seleccionado ningún archivo.";
-
         return;
     }
 
@@ -33,15 +32,10 @@ archivosInput.addEventListener("change", function () {
         tamañoTotal += archivo.size;
 
         if (archivo.type.startsWith("image/")) {
-
             fotos++;
-
         } else if (archivo.type.startsWith("video/")) {
-
             videos++;
-
         }
-
     }
 
     const tamañoMB =
@@ -50,19 +44,15 @@ archivosInput.addEventListener("change", function () {
     let mensaje = "";
 
     if (fotos > 0) {
-
         mensaje +=
             `📸 ${fotos} foto${fotos !== 1 ? "s" : ""}`;
-
     }
 
     if (videos > 0) {
-
         if (mensaje !== "") mensaje += " • ";
 
         mensaje +=
             `🎥 ${videos} vídeo${videos !== 1 ? "s" : ""}`;
-
     }
 
     nombreArchivos.innerHTML =
@@ -79,7 +69,6 @@ function obtenerDuracion(archivo) {
     return new Promise((resolve, reject) => {
 
         const video = document.createElement("video");
-
         const url = URL.createObjectURL(archivo);
 
         video.preload = "metadata";
@@ -91,16 +80,13 @@ function obtenerDuracion(archivo) {
             URL.revokeObjectURL(url);
 
             if (!Number.isFinite(duracion)) {
-
                 reject(new Error(
                     `No se pudo comprobar la duración de ${archivo.name}.`
                 ));
-
                 return;
             }
 
             resolve(duracion);
-
         };
 
         video.onerror = function () {
@@ -110,13 +96,10 @@ function obtenerDuracion(archivo) {
             reject(new Error(
                 `No se pudo leer el video ${archivo.name}.`
             ));
-
         };
 
         video.src = url;
-
     });
-
 }
 
 // =====================================
@@ -124,9 +107,7 @@ function obtenerDuracion(archivo) {
 // =====================================
 
 function generarToken() {
-
     return crypto.randomUUID().replace(/-/g, "");
-
 }
 
 // =====================================
@@ -148,13 +129,9 @@ function llamarAppsScript(parametros) {
         let limite;
 
         function limpiar() {
-
             delete window[callback];
-
             script.remove();
-
             clearTimeout(limite);
-
         }
 
         limite = setTimeout(() => {
@@ -172,14 +149,11 @@ function llamarAppsScript(parametros) {
             limpiar();
 
             if (!respuesta.ok) {
-
                 reject(new Error(respuesta.error));
-
                 return;
             }
 
             resolve(respuesta);
-
         };
 
         script.onerror = function () {
@@ -189,24 +163,117 @@ function llamarAppsScript(parametros) {
             reject(new Error(
                 "No se pudo comunicar con Google Apps Script."
             ));
-
         };
 
         const datos = new URLSearchParams({
-
             ...parametros,
-
             callback: callback
-
         });
 
         script.src =
             URL_APPS_SCRIPT + "?" + datos.toString();
 
         document.body.appendChild(script);
-
     });
+}
 
+// =====================================
+// CARGAR Y MOSTRAR FOTOGRAFÍAS
+// =====================================
+
+async function cargarGaleria() {
+
+    contenedorGaleria.innerHTML =
+        "<p class='sin-fotos'>⏳ Cargando fotografías...</p>";
+
+    try {
+
+        const respuesta = await llamarAppsScript({
+            accion: "listarFotos"
+        });
+
+        const fotos = respuesta.fotos || [];
+
+        contenedorGaleria.innerHTML = "";
+
+        if (fotos.length === 0) {
+
+            contenedorGaleria.innerHTML =
+                "<p class='sin-fotos'>Todavía no hay fotografías compartidas. ¡Sé el primero en compartir un recuerdo! 💕</p>";
+
+            return;
+        }
+
+        const galeria = document.createElement("div");
+
+        galeria.style.display = "grid";
+        galeria.style.gridTemplateColumns =
+            "repeat(auto-fill, minmax(180px, 1fr))";
+        galeria.style.gap = "15px";
+        galeria.style.width = "100%";
+
+        fotos.forEach(function (foto) {
+
+            const tarjeta = document.createElement("div");
+
+            tarjeta.style.overflow = "hidden";
+            tarjeta.style.borderRadius = "12px";
+            tarjeta.style.background = "#ffffff";
+            tarjeta.style.boxShadow =
+                "0 2px 8px rgba(0,0,0,0.12)";
+
+            const enlace = document.createElement("a");
+
+            enlace.href =
+                "https://drive.google.com/file/d/" +
+                encodeURIComponent(foto.id) +
+                "/view";
+
+            enlace.target = "_blank";
+            enlace.rel = "noopener noreferrer";
+
+            const imagen = document.createElement("img");
+
+            imagen.src = foto.url;
+            imagen.alt = foto.nombre;
+            imagen.loading = "lazy";
+
+            imagen.style.display = "block";
+            imagen.style.width = "100%";
+            imagen.style.height = "200px";
+            imagen.style.objectFit = "cover";
+
+            imagen.onerror = function () {
+                imagen.alt = "No se pudo cargar esta fotografía.";
+                imagen.style.objectFit = "contain";
+                imagen.style.background = "#eeeeee";
+            };
+
+            const nombre = document.createElement("p");
+
+            nombre.textContent = foto.nombre;
+            nombre.style.padding = "8px";
+            nombre.style.margin = "0";
+            nombre.style.fontSize = "13px";
+            nombre.style.textAlign = "center";
+            nombre.style.overflowWrap = "anywhere";
+
+            enlace.appendChild(imagen);
+            tarjeta.appendChild(enlace);
+            tarjeta.appendChild(nombre);
+
+            galeria.appendChild(tarjeta);
+        });
+
+        contenedorGaleria.appendChild(galeria);
+
+    } catch (error) {
+
+        console.error("Error al cargar la galería:", error);
+
+        contenedorGaleria.innerHTML =
+            "<p class='sin-fotos'>No pudimos cargar las fotografías. Intenta actualizar la página.</p>";
+    }
 }
 
 // =====================================
@@ -218,19 +285,14 @@ async function solicitarSesion(archivo, token) {
     const respuesta = await llamarAppsScript({
 
         accion: "crear",
-
         nombre: archivo.name,
-
         tipo: archivo.type,
-
         tamano: String(archivo.size),
-
         token: token
 
     });
 
     return respuesta.sessionUrl;
-
 }
 
 // =====================================
@@ -260,41 +322,25 @@ function enviarArchivo(sessionUrl, archivo) {
 
                 btnSubir.textContent =
                     `⏳ Subiendo ${archivo.name}: ${porcentaje}%`;
-
             }
-
         };
 
         solicitud.onload = function () {
-
-            // La respuesta puede quedar bloqueada por CORS.
-            // La verificación real se realiza después en Apps Script.
-
             resolve();
-
         };
 
         solicitud.onerror = function () {
-
-            // No declaramos éxito todavía.
-            // Primero verificaremos si Drive guardó el archivo.
-
             resolve();
-
         };
 
         solicitud.onabort = function () {
-
             reject(new Error(
                 "La subida fue cancelada."
             ));
-
         };
 
         solicitud.send(archivo);
-
     });
-
 }
 
 // =====================================
@@ -308,27 +354,20 @@ async function verificarArchivo(token) {
         const respuesta = await llamarAppsScript({
 
             accion: "verificar",
-
             token: token
 
         });
 
         if (respuesta.encontrado) {
-
             return true;
-
         }
-
-        // Esperar tres segundos antes de volver a consultar.
 
         await new Promise(resolve =>
             setTimeout(resolve, 3000)
         );
-
     }
 
     return false;
-
 }
 
 // =====================================
@@ -339,16 +378,10 @@ async function subirArchivo(archivo) {
 
     const token = generarToken();
 
-    // 1. Solicitar sesión a Google Drive.
-
     const sessionUrl =
         await solicitarSesion(archivo, token);
 
-    // 2. Enviar el archivo.
-
     await enviarArchivo(sessionUrl, archivo);
-
-    // 3. Comprobar que realmente se guardó.
 
     const guardado =
         await verificarArchivo(token);
@@ -358,11 +391,9 @@ async function subirArchivo(archivo) {
         throw new Error(
             `No pudimos confirmar que "${archivo.name}" se haya guardado en Google Drive.`
         );
-
     }
 
     return true;
-
 }
 
 // =====================================
@@ -386,9 +417,7 @@ btnSubir.addEventListener("click", async function () {
 
     try {
 
-        // ---------------------------------
         // VALIDAR TODOS LOS ARCHIVOS
-        // ---------------------------------
 
         for (const archivo of archivos) {
 
@@ -400,7 +429,6 @@ btnSubir.addEventListener("click", async function () {
                 throw new Error(
                     `${archivo.name} no es una foto ni un video permitido.`
                 );
-
             }
 
             if (archivo.type.startsWith("video/")) {
@@ -413,16 +441,11 @@ btnSubir.addEventListener("click", async function () {
                     throw new Error(
                         `El video "${archivo.name}" dura ${duracion.toFixed(1)} segundos. El máximo permitido es 30 segundos.`
                     );
-
                 }
-
             }
-
         }
 
-        // ---------------------------------
         // SUBIR ARCHIVOS UNO POR UNO
-        // ---------------------------------
 
         let exitosos = 0;
 
@@ -436,12 +459,7 @@ btnSubir.addEventListener("click", async function () {
             await subirArchivo(archivo);
 
             exitosos++;
-
         }
-
-        // ---------------------------------
-        // RESULTADO FINAL
-        // ---------------------------------
 
         alert(
             `💕 ¡Perfecto! Se guardaron correctamente ${exitosos} archivo(s) en Google Drive.`
@@ -451,6 +469,10 @@ btnSubir.addEventListener("click", async function () {
 
         nombreArchivos.textContent =
             "No has seleccionado ningún archivo.";
+
+        // ACTUALIZAR GALERÍA DESPUÉS DE SUBIR
+
+        await cargarGaleria();
 
     } catch (error) {
 
@@ -464,7 +486,11 @@ btnSubir.addEventListener("click", async function () {
 
         btnSubir.textContent =
             "💕 Compartir recuerdos";
-
     }
-
 });
+
+// =====================================
+// CARGAR GALERÍA AL ABRIR LA PÁGINA
+// =====================================
+
+cargarGaleria();
