@@ -91,21 +91,26 @@ main {
     text-align: center;
     padding: 40px 20px;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 20px;
+    max-width: 1200px;
+    margin: auto;
 }
 
 .fotos{
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-    gap: 20px;
-    max-width: 900px;
-    margin: 25px auto;
+    flex: 1 1 280px;
+    max-width: 360px;
+    margin: 0;
 }
 
 .foto{
     width: 100%;
-    height: 280px;
-    object-fit: cover;
+    height: auto;
+    object-fit: contain;
     border-radius: 15px;
+    display: block;
 }
 
 section {
